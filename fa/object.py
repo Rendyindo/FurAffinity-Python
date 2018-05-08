@@ -1,11 +1,14 @@
 from bs4 import BeautifulSoup
-import requests
+import requests, helper
 class FASubmission(object):
     def __init__(self, data, logincookie):
         self.data = data
         self.s = BeautifulSoup(self.data, 'html.parser')
         self.logincookie = logincookie
     
+    def __repr__(self):
+        return self.title + " by " + self.artist
+
     @property
     def imglink(self):
         return self.s.find(attrs={'class' : 'alt1 actions aligncenter'}).findAll('b')[1].a.get('href')
@@ -30,7 +33,7 @@ class FASubmission(object):
 
     @property
     def rating(self, id):
-        r = helper.getpost(id)
+        r = helper.getpost(id, self.logincookie)
         if "/themes/classic/img/labels/general.gif" in r:
             return "General"
         elif "/themes/classic/img/labels/mature.gif" in r:
@@ -40,15 +43,15 @@ class FASubmission(object):
 
     def info(self):
         a = self.s.find(attrs={ 'class' : 'alt1 stats-container'}).text.replace(u'\xa0', u' ').strip().split("\n")
-        info.postdate = self.s.find(attrs={ 'class' : 'alt1 stats-container'}).find('span').get('title')
-        info.category = a[2].strip().replace("Category: ", "")
-        info.theme = a[3].strip().replace('Theme: ', '')
-        info.species = a[4].strip().replace('Species: ', '')
-        info.gender = a[4].strip().replace('Gender: ', '')
-        info.favorites = int(a[6])
-        info.comments = int(a[7].strip().replace('Comments: ', ''))
-        info.views = int(a[8].strip().replace('Views: ', ''))
-        info.reso = a[12].strip().replace('Resolution: ', '')
+        self.postdate = self.s.find(attrs={ 'class' : 'alt1 stats-container'}).find('span').get('title')
+        self.category = a[2].strip().replace("Category: ", "")
+        self.theme = a[3].strip().replace('Theme: ', '')
+        self.species = a[4].strip().replace('Species: ', '')
+        self.gender = a[4].strip().replace('Gender: ', '')
+        self.favorites = int(a[6])
+        self.comments = int(a[7].strip().replace('Comments: ', ''))
+        self.views = int(a[8].strip().replace('Views: ', ''))
+        self.reso = a[12].strip().replace('Resolution: ', '')
 
     def addfav(self):
         url = "https://furaffinity.net" + self.s.find(attrs={'class' : 'alt1 actions aligncenter'}).find('b').a.get('href')
