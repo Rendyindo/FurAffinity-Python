@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
-import requests, object, helper
+from selenium import webdriver
+from selenium.webdriver.support.ui import Select
+import requests, object, helper, exceptions
 
 class FurAffinity():
     def __init__(self, a="", b="", cfuid=""):
@@ -34,12 +36,33 @@ class FurAffinity():
             return r.raise_for_status()
         s = BeautifulSoup(r.text, "html.parser")
         postlist = []
-        print(len(s.findAll("figure")))
         for post in s.findAll("figure")[:limit]:
             r = helper.getpost(post.a.get("href").replace("/view/", ""), self.logincookie)
             postlist.append(object.FASubmission(r, self.logincookie))
         return postlist
 
-
-
-    
+    def search(self, *query, page=1, sort="relevancy", order="descending"):
+        
+        validsorts = ['relevancy', 'date', 'popularity']
+        if sort not in validsorts:
+            raise exceptions.InvalidParameter("Invalid sort type: " + sort)
+        if order not in ['ascending', 'descending']:
+            raise exceptions.InvalidParameter("Invalid order: " + order)
+        if page > 1 or sort is not "relevancy" or order is not "descending":
+            resubmitdata = True
+        else:
+            resubmitdata = False
+        if page < 0 or page == 0:
+            print("Dude no")
+            raise exceptions.InvalidParameter("Invalid page number: " + page)
+        b = webdriver.Chrome()
+        b.get("http://www.furaffinity.net/search/?q=" + '%20'.join(query))
+        if resubmitdata:
+            pageelem = b.find_element_by_xpath("""//*[@id="page"]""")
+            pageelem.send_keys(page)
+            sortelem = Select(b.find_element_by_xpath("""//*[@id="search-form"]/fieldset/select[2]"""))
+            sortelem.select_by_visible_text(sort)
+            orderelem = Select(b.find_element_by_xpath("""//*[@id="search-form"]/fieldset/select[3]"""))
+            orderelem.select_by_visible_text(order)
+            b.find_elements_by_xpath("""//*[@id="search-form"]/fieldset/input[3]""").click()
+        return object.SearchResults(b, b.page_source, self.logincookie)

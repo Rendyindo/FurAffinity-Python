@@ -60,3 +60,29 @@ class FASubmission(object):
             pass
         else:
             return r.raise_for_status()
+
+class SearchResults(object):
+    def __init__(self, browser, source, logincookie):
+        self.browser = browser
+        self.page_source = source
+        self.logincookie = logincookie
+    
+    @property
+    def posts(self):
+        s = BeautifulSoup(self.page_source, "html.parser")
+        postlist = []
+        for post in s.findAll("figure"):
+            r = helper.getpost(post.a.get("href").replace("/view/", ""), self.logincookie)
+            print(r)
+            print(post.a.get("href").replace("/view/", ""))
+            postlist.append(FASubmission(r, self.logincookie))
+        return postlist
+    
+    def next(self):
+        btn = self.browser.find_elements_by_name("next_page")[0]
+        btn.click()
+        return SearchResults(self.browser, self.browser.page_source, self.logincookie)
+    
+    def close(self):
+        self.browser.close()
+        pass
