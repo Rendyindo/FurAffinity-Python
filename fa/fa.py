@@ -66,3 +66,11 @@ class FurAffinity():
             orderelem.select_by_visible_text(order)
             b.find_elements_by_xpath("""//*[@id="search-form"]/fieldset/input[3]""").click()
         return object.SearchResults(b, b.page_source, self.logincookie)
+
+    def user(self, name):
+        if "_" in name:
+            name = name.replace("_", "")
+        r = helper.getuser(name, self.logincookie)
+        if "This user cannot be found." in r:
+            raise exceptions.UserNotFound("User cannot be found!")
+        return object.FAUser(r, self.logincookie)

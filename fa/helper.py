@@ -6,3 +6,10 @@ def getpost(id, logincookie):
         return r.text
     else:
         return r.raise_for_status()
+
+def getuser(id, logincookie):
+    r = requests.get("http://www.furaffinity.net/user/" + id, cookies=logincookie)
+    if r.status_code == 200:
+        return r.text
+    else:
+        return r.raise_for_status()

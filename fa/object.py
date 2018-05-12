@@ -86,3 +86,37 @@ class SearchResults(object):
     def close(self):
         self.browser.close()
         pass
+
+class FAUser(object):
+    def __init__(self, data, logincookie):
+        self.data = data
+        self.s = BeautifulSoup(self.data, 'html.parser')
+        self.logincookie = logincookie
+        self.info = self.s.find(attrs={ 'class' : 'ldot' }).text.split("\n")
+
+    def __repr__(self):
+        return "User profile of"
+
+    @property
+    def username(self):
+        return self.s.title.text.replace("Userpage of ", "").replace(" -- Fur Affinity [dot] net", "")
+
+    @property
+    def full_name(self):
+        return self.info[1].replace("Full Name: ", "")
+
+    @property
+    def title(self):
+        return self.info[2].replace("User Title: ", "")
+
+    @property
+    def registime(self):
+        return self.info[3].replace("Registered since: ", "")
+
+    @property
+    def profile(self):
+        return r'\n'.join(self.info[6:])
+
+    @property
+    def mood(self):
+        return self.info[4].replace("Current mood: ", "")
