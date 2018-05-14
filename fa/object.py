@@ -121,6 +121,11 @@ class FAUser(object):
     def mood(self):
         return self.info[4].replace("Current mood: ", "")
 
+    @property
+    def featured_journal(self):
+        id = self.s.find(attrs={ 'class': 'no_overflow'}).a.get('href').replace("/journal/", "")
+        return Journal(helper.getjournal(id, self.logincookie), self.logincookie)
+
 class Journal(object):
     def __init__(self, data, logincookie):
         self.data = data
