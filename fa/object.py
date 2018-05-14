@@ -95,7 +95,7 @@ class FAUser(object):
         self.info = self.s.find(attrs={ 'class' : 'ldot' }).text.split("\n")
 
     def __repr__(self):
-        return "User profile of" + self.username
+        return "User profile of " + self.username
 
     @property
     def username(self):
