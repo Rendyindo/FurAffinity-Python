@@ -3,3 +3,6 @@ class InvalidParameter(Exception):
 
 class UserNotFound(Exception):
     pass
+
+class Forbidden(Exception):
+    pass

@@ -73,4 +73,6 @@ class FurAffinity():
         r = helper.getuser(name, self.logincookie)
         if "This user cannot be found." in r:
             raise exceptions.UserNotFound("User cannot be found!")
+        if "registered users only" in r:
+            raise exceptions.Forbidden("You need to login to view this user!")
         return object.FAUser(r, self.logincookie)
