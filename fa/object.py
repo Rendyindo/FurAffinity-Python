@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-import requests, helper
+import requests, helper, fa
 class FASubmission(object):
     def __init__(self, data, logincookie):
         self.data = data
@@ -120,3 +120,40 @@ class FAUser(object):
     @property
     def mood(self):
         return self.info[4].replace("Current mood: ", "")
+
+class Journal(object):
+    def __init__(self, data, logincookie):
+        self.data = data
+        self.s = BeautifulSoup(self.data, 'html.parser')
+        self.logincookie = logincookie
+
+    def __repr__(self):
+        return self.title
+
+    @property
+    def title(self):
+        return self.s.find(attrs={ 'class': 'no_overflow'}).text.strip()
+
+    @property
+    def owner(self):
+        return fa.FurAffinity().user(self.s.find(attrs={ 'class': 'journal-title-box'}).a.get('href'))
+
+    @property
+    def content(self):
+        try:
+            head = self.s.find(attrs={ 'class': 'journal-header'}).text.strip()
+        except:
+            head = ''
+        try:
+            footer = self.s.find(attrs={ 'class': 'journal-footer'}).text.strip()
+        except:
+            footer = ''
+        try:
+            body = self.s.find(attrs={ 'class': 'journal-body'}).text.strip()
+        except:
+            body = ''
+        return head + "|" + body + "|" + footer
+
+    @property
+    def postdate(self):
+        return self.s.find(attrs={ 'class': 'journal-title-box'}).span.get('title')
