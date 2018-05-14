@@ -141,7 +141,7 @@ class Journal(object):
 
     @property
     def owner(self):
-        return fa.FurAffinity().user(self.s.find(attrs={ 'class': 'journal-title-box'}).a.get('href'))
+        return fa.FurAffinity().user(self.s.find(attrs={ 'class': 'journal-title-box'}).a.get('href').replace("/user/", ""))
 
     @property
     def content(self):
