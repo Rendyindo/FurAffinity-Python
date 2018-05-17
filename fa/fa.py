@@ -56,6 +56,7 @@ class FurAffinity():
             print("Dude no")
             raise exceptions.InvalidParameter("Invalid page number: " + page)
         b = webdriver.Chrome()
+        b.add_cookie(self.logincookie)
         b.get("http://www.furaffinity.net/search/?q=" + '%20'.join(query))
         if resubmitdata:
             pageelem = b.find_element_by_xpath("""//*[@id="page"]""")
