@@ -131,6 +131,18 @@ class FAUser(object):
         id = self.s.find(attrs={'class': 'flow userpage-featured-submission'}).s.a.get('href').replace("/view/", "")
         return FASubmission(helper.getpost(id, self.logincookie), self.logincookie)
 
+    @property
+    def gallery(self):
+        url = "http://www.furaffinity.net/gallery/" + self.username
+        b = requests.get(url, self.logincookie)
+        return Gallery(url, b.text, self.logincookie)
+
+    @property
+    def scraps(self):
+        url = "http://www.furaffinity.net/scraps/" + self.username
+        b = requests.get(url, self.logincookie)
+        return Gallery(url, b.text, self.logincookie)
+
 class Journal(object):
     def __init__(self, data, logincookie):
         self.data = data
@@ -167,3 +179,26 @@ class Journal(object):
     @property
     def postdate(self):
         return self.s.find(attrs={ 'class': 'journal-title-box'}).span.get('title')
+
+class Gallery(object):
+    def __init__(self, url, source, logincookie):
+        self.url = url
+        self.page_source = source
+        self.logincookie = logincookie
+
+    @property
+    def posts(self):
+        s = BeautifulSoup(self.page_source, "html.parser")
+        postlist = []
+        for post in s.findAll("figure"):
+            r = helper.getpost(post.a.get("href").replace("/view/", ""), self.logincookie)
+            print(r)
+            print(post.a.get("href").replace("/view/", ""))
+            postlist.append(FASubmission(r, self.logincookie))
+        return postlist
+    
+    def next(self):
+        page = int(self.url.split("/")[-1])
+        url = self.url + str(page + 1)
+        r = requests.get(url)
+        return Gallery(url, r.text, self.logincookie)
