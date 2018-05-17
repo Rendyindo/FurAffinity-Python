@@ -126,6 +126,11 @@ class FAUser(object):
         id = self.s.find(attrs={ 'class': 'no_overflow'}).a.get('href').replace("/journal/", "")
         return Journal(helper.getjournal(id, self.logincookie), self.logincookie)
 
+    @property
+    def featured_submission(self):
+        id = self.s.find(attrs={'class': 'flow userpage-featured-submission'}).s.a.get('href').replace("/view/", "")
+        return FASubmission(helper.getpost(id, self.logincookie), self.logincookie)
+
 class Journal(object):
     def __init__(self, data, logincookie):
         self.data = data
