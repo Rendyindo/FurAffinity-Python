@@ -33,7 +33,7 @@ class FASubmission(object):
 
     @property
     def rating(self, id):
-        r = helper.getpost(id, self.logincookie)
+        r = fa.helper.getpost(id, self.logincookie)
         if "/themes/classic/img/labels/general.gif" in r:
             return "General"
         elif "/themes/classic/img/labels/mature.gif" in r:
@@ -72,7 +72,7 @@ class SearchResults(object):
         s = BeautifulSoup(self.page_source, "html.parser")
         postlist = []
         for post in s.findAll("figure"):
-            r = helper.getpost(post.a.get("href").replace("/view/", ""), self.logincookie)
+            r = fa.helper.getpost(post.a.get("href").replace("/view/", ""), self.logincookie)
             print(r)
             print(post.a.get("href").replace("/view/", ""))
             postlist.append(FASubmission(r, self.logincookie))
@@ -124,12 +124,12 @@ class FAUser(object):
     @property
     def featured_journal(self):
         id = self.s.find(attrs={ 'class': 'no_overflow'}).a.get('href').replace("/journal/", "")
-        return Journal(helper.getjournal(id, self.logincookie), self.logincookie)
+        return Journal(fa.helper.getjournal(id, self.logincookie), self.logincookie)
 
     @property
     def featured_submission(self):
         id = self.s.find(attrs={'class': 'flow userpage-featured-submission'}).s.a.get('href').replace("/view/", "")
-        return FASubmission(helper.getpost(id, self.logincookie), self.logincookie)
+        return FASubmission(fa.helper.getpost(id, self.logincookie), self.logincookie)
 
     @property
     def gallery(self):
@@ -191,7 +191,7 @@ class Gallery(object):
         s = BeautifulSoup(self.page_source, "html.parser")
         postlist = []
         for post in s.findAll("figure"):
-            r = helper.getpost(post.a.get("href").replace("/view/", ""), self.logincookie)
+            r = fa.helper.getpost(post.a.get("href").replace("/view/", ""), self.logincookie)
             print(r)
             print(post.a.get("href").replace("/view/", ""))
             postlist.append(FASubmission(r, self.logincookie))

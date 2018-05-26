@@ -11,8 +11,8 @@ class FurAffinity():
             print("If you think this is a mistake, try to recheck your cookie again!")
     
     def show(self, id):
-        r = helper.getpost(id, self.logincookie)
-        return object.FASubmission(r, self.logincookie)
+        r = fa.helper.getpost(id, self.logincookie)
+        return fa.object.FASubmission(r, self.logincookie)
 
     @property
     def username(self):
@@ -37,24 +37,24 @@ class FurAffinity():
         s = BeautifulSoup(r.text, "html.parser")
         postlist = []
         for post in s.findAll("figure")[:limit]:
-            r = helper.getpost(post.a.get("href").replace("/view/", ""), self.logincookie)
-            postlist.append(object.FASubmission(r, self.logincookie))
+            r = fa.helper.getpost(post.a.get("href").replace("/view/", ""), self.logincookie)
+            postlist.append(fa.object.FASubmission(r, self.logincookie))
         return postlist
 
     def search(self, *query, page=1, sort="relevancy", order="descending"):
         
         validsorts = ['relevancy', 'date', 'popularity']
         if sort not in validsorts:
-            raise exceptions.InvalidParameter("Invalid sort type: " + sort)
+            raise fa.exceptions.InvalidParameter("Invalid sort type: " + sort)
         if order not in ['ascending', 'descending']:
-            raise exceptions.InvalidParameter("Invalid order: " + order)
+            raise fa.exceptions.InvalidParameter("Invalid order: " + order)
         if page > 1 or sort is not "relevancy" or order is not "descending":
             resubmitdata = True
         else:
             resubmitdata = False
         if page < 0 or page == 0:
             print("Dude no")
-            raise exceptions.InvalidParameter("Invalid page number: " + page)
+            raise fa.exceptions.InvalidParameter("Invalid page number: " + page)
         b = webdriver.Chrome()
         b.add_cookie(self.logincookie)
         b.get("http://www.furaffinity.net/search/?q=" + '%20'.join(query))
@@ -66,14 +66,14 @@ class FurAffinity():
             orderelem = Select(b.find_element_by_xpath("""//*[@id="search-form"]/fieldset/select[3]"""))
             orderelem.select_by_visible_text(order)
             b.find_elements_by_xpath("""//*[@id="search-form"]/fieldset/input[3]""").click()
-        return object.SearchResults(b, b.page_source, self.logincookie)
+        return fa.object.SearchResults(b, b.page_source, self.logincookie)
 
     def user(self, name):
         if "_" in name:
             name = name.replace("_", "")
-        r = helper.getuser(name, self.logincookie)
+        r = fa.helper.getuser(name, self.logincookie)
         if "This user cannot be found." in r:
-            raise exceptions.UserNotFound("User cannot be found!")
+            raise fa.exceptions.UserNotFound("User cannot be found!")
         if "registered users only" in r:
-            raise exceptions.Forbidden("You need to login to view this user!")
-        return object.FAUser(r, self.logincookie)
+            raise fa.exceptions.Forbidden("You need to login to view this user!")
+        return fa.object.FAUser(r, self.logincookie)
