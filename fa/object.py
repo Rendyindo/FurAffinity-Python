@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-import requests, helper, fa
+import requests, fa.helper, fa
 class FASubmission(object):
     def __init__(self, data, logincookie):
         self.data = data
