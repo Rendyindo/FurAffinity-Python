@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
-import requests, object, helper, exceptions
+import requests, fa.object, fa.helper, fa.exceptions
 
 class FurAffinity():
     def __init__(self, a="", b="", cfuid=""):
