@@ -73,8 +73,6 @@ class SearchResults(object):
         postlist = []
         for post in s.findAll("figure"):
             r = fa.helper.getpost(post.a.get("href").replace("/view/", ""), self.logincookie)
-            print(r)
-            print(post.a.get("href").replace("/view/", ""))
             postlist.append(FASubmission(r, self.logincookie))
         return postlist
     
