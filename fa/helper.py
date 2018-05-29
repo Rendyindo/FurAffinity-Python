@@ -1,4 +1,4 @@
-import requests
+import requests, time
 
 def RateLimit(maxPerSecond):
     minInterval = 1.0 / float(maxPerSecond)
