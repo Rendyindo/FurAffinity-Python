@@ -73,7 +73,12 @@ class SearchResults(object):
         postlist = []
         for post in s.findAll("figure"):
             r = fa.helper.getpost(post.a.get("href").replace("/view/", ""), self.logincookie)
-            postlist.append(FASubmission(r, self.logincookie))
+            if "registered users only" in r:
+                pass
+            elif "not allowed to view this image due to the content filter" in r:
+                pass
+            else:
+                postlist.append(FASubmission(r, self.logincookie))
         return postlist
     
     def next(self):
