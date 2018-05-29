@@ -33,4 +33,5 @@ An API-like wrapper for FurAffinity, written in Python 3.6.
 >>> result.close() // Close Chrome browser
 ```
 
-More details are going to be added in wiki, soon(tm).
+More details are going to be added in wiki, soon(tm).  
+Also take a note to **not** violate any FA's [ToS](http://www.furaffinity.net/tos/) using this module!
