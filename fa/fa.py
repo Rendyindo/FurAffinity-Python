@@ -12,11 +12,11 @@ class FurAffinity():
     
     def show(self, id):
         r = fa.helper.getpost(id, self.logincookie)
-        return fa.object.FASubmission(r, self.logincookie)
         if "registered users only" in r:
             raise fa.exceptions.Forbidden("You need to login to view this user!")
         if "not allowed to view this image due to the content filter" in r:
             raise fa.exceptions.Forbidden("You need to apply your current content filter settings!")
+        return fa.object.FASubmission(r, self.logincookie)
 
     @property
     def username(self):
