@@ -15,7 +15,7 @@ class FASubmission(object):
     
     @property
     def title(self):
-        return self.s.find(attrs={'class' : 'cat'}).string.strip()
+        return self.s.findAll(attrs={'class' : 'cat'})[1].b.string
 
     @property
     def artist(self):
@@ -62,10 +62,10 @@ class FASubmission(object):
             return r.raise_for_status()
 
 class SearchResults(object):
-    def __init__(self, browser, source, logincookie):
-        self.browser = browser
+    def __init__(self, source, logincookie, postdata):
         self.page_source = source
         self.logincookie = logincookie
+        self.postdata = postdata
     
     @property
     def posts(self):
@@ -82,13 +82,9 @@ class SearchResults(object):
         return postlist
     
     def next(self):
-        btn = self.browser.find_elements_by_name("next_page")[0]
-        btn.click()
-        return SearchResults(self.browser, self.browser.page_source, self.logincookie)
-    
-    def close(self):
-        self.browser.close()
-        pass
+        self.postdata['page'] =+ 1
+        r = requests.post("http://www.furaffinity.net/search/", data=self.postdata)
+        return SearchResults(r, self.logincookie, self.postdata)
 
 class FAUser(object):
     def __init__(self, data, logincookie):

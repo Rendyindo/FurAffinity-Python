@@ -1,6 +1,4 @@
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.support.ui import Select
 import requests, fa.object, fa.helper, fa.exceptions
 
 class FurAffinity():
@@ -45,36 +43,20 @@ class FurAffinity():
             postlist.append(fa.object.FASubmission(r, self.logincookie))
         return postlist
 
-    def search(self, *query, page=1, sort="relevancy", order="descending"):
-        
+    def search(self, *query, page=1, sort="relevancy", order="desc"):
         validsorts = ['relevancy', 'date', 'popularity']
         if sort not in validsorts:
             raise fa.exceptions.InvalidParameter("Invalid sort type: " + sort)
-        if order not in ['ascending', 'descending']:
+        if order not in ['asc', 'desc']:
             raise fa.exceptions.InvalidParameter("Invalid order: " + order)
-        if page > 1 or sort is not "relevancy" or order is not "descending":
-            resubmitdata = True
-        else:
-            resubmitdata = False
         if page < 0 or page == 0:
-            print("Dude no")
             raise fa.exceptions.InvalidParameter("Invalid page number: " + page)
-        b = webdriver.Chrome()
-        b.get("http://www.furaffinity.net/search/?q=" + '%20'.join(query))
-        browsercookie = fa.helper.split_dict_equally(self.logincookie)
-        for semicookie in browsercookie:
-            for a,c in semicookie.items():
-                cookie = { 'name': a, 'value': c }
-                b.add_cookie(cookie)
-        if resubmitdata:
-            pageelem = b.find_element_by_xpath("""//*[@id="page"]""")
-            pageelem.send_keys(page)
-            sortelem = Select(b.find_element_by_xpath("""//*[@id="search-form"]/fieldset/select[2]"""))
-            sortelem.select_by_visible_text(sort)
-            orderelem = Select(b.find_element_by_xpath("""//*[@id="search-form"]/fieldset/select[3]"""))
-            orderelem.select_by_visible_text(order)
-            b.find_elements_by_xpath("""//*[@id="search-form"]/fieldset/input[3]""").click()
-        return fa.object.SearchResults(b, b.page_source, self.logincookie)
+        postdata = {'q': '+'.join(query), 'perpage': '24', 'order-by': sort, 'order-direction': order, \
+                    'do_search': 'Search', 'range': 'all', 'rating-general': 'on', 'type-art': 'on', \
+                    'type-flash': 'on', 'type-photo': 'on', 'type-music': 'on', 'type-story': 'on', \
+                    'type-poetry': 'on', 'mode': 'extended', 'page': page}
+        r = requests.post("http://www.furaffinity.net/search/", data=postdata)
+        return fa.object.SearchResults(r.text, self.logincookie, postdata)
 
     def user(self, name):
         if "_" in name:
