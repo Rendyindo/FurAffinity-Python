@@ -84,7 +84,7 @@ class SearchResults(object):
     def next(self):
         self.postdata['page'] =+ 1
         r = requests.post("http://www.furaffinity.net/search/", data=self.postdata)
-        return SearchResults(r, self.logincookie, self.postdata)
+        return SearchResults(r.text, self.logincookie, self.postdata)
 
 class FAUser(object):
     def __init__(self, data, logincookie):
