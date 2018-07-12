@@ -51,7 +51,7 @@ class FurAffinity():
             raise fa.exceptions.InvalidParameter("Invalid order: " + order)
         if page < 0 or page == 0:
             raise fa.exceptions.InvalidParameter("Invalid page number: " + page)
-        postdata = {'q': '+'.join(query), 'perpage': '24', 'order-by': sort, 'order-direction': order, \
+        postdata = {'q': '+'.join(query), 'perpage': '48', 'order-by': sort, 'order-direction': order, \
                     'do_search': 'Search', 'range': 'all', 'rating-general': 'on', 'type-art': 'on', \
                     'type-flash': 'on', 'type-photo': 'on', 'type-music': 'on', 'type-story': 'on', \
                     'type-poetry': 'on', 'mode': 'extended', 'page': page}
