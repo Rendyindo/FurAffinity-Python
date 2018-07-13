@@ -148,6 +148,14 @@ class FAUser(object):
         url = "http://www.furaffinity.net" + watchurl
         requests.get(url, self.logincookie)
 
+    def commission(self):
+        url = "http://www.furaffinity.net/commissions/" + self.username
+        r = BeautifulSoup(requests.get(url, cookies=self.logincookie).text, 'html.parser')
+        c = []
+        for info in r.find(attrs={'class':"types-table"}).findAll("tr"):
+            c.append(Commission(info, self.logincookie))
+        return c
+
 class Journal(object):
     def __init__(self, data, logincookie):
         self.data = data
@@ -207,3 +215,29 @@ class Gallery(object):
         url = self.url + str(page + 1)
         r = requests.get(url)
         return Gallery(url, r.text, self.logincookie)
+
+class Commission(object):
+    def __init__(self, source, logincookie):
+        self.source = BeautifulSoup(source, 'html.parser')
+        self.tds = self.source.findAll("td")
+        self.logincookie = logincookie
+
+    @property
+    def preview(self):
+        post = self.source.th.center.b.u.s.a.get("href")
+        if "#" not in post:
+            return FASubmission(fa.helper.getpost(id, self.logincookie), self.logincookie)
+        else:
+            return None
+
+    @property
+    def price(self):
+        return self.tds[0].dl.findAll('dd')[0].text.replace("Price: ", "")
+
+    @property
+    def slot(self):
+        return self.tds[0].dl.findAll('dd')[1].text.replace("Slots: ", "")
+
+    @property
+    def description(self):
+        return self.tds[1].text
