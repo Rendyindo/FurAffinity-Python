@@ -140,6 +140,14 @@ class FAUser(object):
         b = requests.get(url, self.logincookie)
         return Gallery(url, b.text, self.logincookie)
 
+    def watch(self):
+        try:
+            watchurl = self.s.find(attrs={'class':"tab"}).findAll("b")[-1].a.get("href")
+        except:
+            raise fa.exceptions.Forbidden("You're not logged in.")
+        url = "http://www.furaffinity.net" + watchurl
+        requests.get(url, self.logincookie)
+
 class Journal(object):
     def __init__(self, data, logincookie):
         self.data = data
