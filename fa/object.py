@@ -130,13 +130,11 @@ class FAUser(object):
         id = self.s.find(attrs={'class': 'flow userpage-featured-submission'}).s.a.get('href').replace("/view/", "")
         return FASubmission(fa.helper.getpost(id, self.logincookie), self.logincookie)
 
-    @property
     def gallery(self):
         url = "http://www.furaffinity.net/gallery/" + self.username
         b = requests.get(url, self.logincookie)
         return Gallery(url, b.text, self.logincookie)
 
-    @property
     def scraps(self):
         url = "http://www.furaffinity.net/scraps/" + self.username
         b = requests.get(url, self.logincookie)
