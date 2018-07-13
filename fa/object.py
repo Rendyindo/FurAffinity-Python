@@ -132,7 +132,7 @@ class FAUser(object):
 
     def gallery(self):
         url = "http://www.furaffinity.net/gallery/" + self.username
-        b = requests.get(url, self.logincookie)
+        b = requests.get(url, cookies=self.logincookie)
         return Gallery(url, b.text, self.logincookie)
 
     def scraps(self):
@@ -146,7 +146,7 @@ class FAUser(object):
         except:
             raise fa.exceptions.Forbidden("You're not logged in.")
         url = "http://www.furaffinity.net" + watchurl
-        requests.get(url, self.logincookie)
+        requests.get(url, cookies=self.logincookie)
 
     def commission(self):
         url = "http://www.furaffinity.net/commissions/" + self.username
