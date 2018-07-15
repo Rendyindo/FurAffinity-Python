@@ -219,7 +219,7 @@ class Gallery(object):
         page = int(self.url.split("/")[-1])
         url = self.url + str(page + 1)
         r = requests.get(url)
-        return Gallery(url, r.text, self.logincookie)
+        self.page_source = r.text
 
 class Commission(object):
     def __init__(self, source, logincookie):
