@@ -156,6 +156,11 @@ class FAUser(object):
             c.append(Commission(info, self.logincookie))
         return c
 
+    def favorites(self):
+        url = "http://www.furaffinity.net/favorites/" + self.username
+        b = requests.get(url, cookies=self.logincookie)
+        return Favorites(url, b.text, self.logincookie)
+
 class Journal(object):
     def __init__(self, data, logincookie):
         self.data = data
@@ -241,3 +246,26 @@ class Commission(object):
     @property
     def description(self):
         return self.tds[1].text
+        
+class Favorites(object):
+    def __init__(self, url, source, logincookie):
+        self.url = url
+        self.page_source = source
+        self.logincookie = logincookie
+
+    @property
+    def posts(self):
+        s = BeautifulSoup(self.page_source, "html.parser")
+        postlist = []
+        for post in s.findAll("figure"):
+            r = fa.helper.getpost(post.a.get("href").replace("/view/", ""), self.logincookie)
+            print(r)
+            print(post.a.get("href").replace("/view/", ""))
+            postlist.append(FASubmission(r, self.logincookie))
+        return postlist
+    
+    def next(self):
+        s = BeautifulSoup(self.page_source, "html.parser")
+        url = "http://www.furaffinity.net" + s.find(attrs={'class':'button-link right'}).get("href")
+        r = requests.get(url)
+        self.page_source = r.text
