@@ -6,7 +6,6 @@ An API-like wrapper for FurAffinity, written in Python 3.6.
 
 - `requests`
 - `bs4`
-- `selenium` - Chrome
 
 ## Getting Started
 
