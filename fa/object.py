@@ -1,9 +1,17 @@
+import requests
 from bs4 import BeautifulSoup
-import requests, fa.helper, fa
+
+import fa
+import fa.helper
+
+
 class FASubmission(object):
-    def __init__(self, data, logincookie):
+    def __init__(self, data, logincookie, postid=0, title=None, artist=None):
+        self._title = title
+        self._artist = artist
         self.data = data
-        self.s = BeautifulSoup(self.data, 'html.parser')
+        if data:
+            self.s = BeautifulSoup(self.data, 'html.parser')
         self.logincookie = logincookie
     
     def __repr__(self):
@@ -15,10 +23,12 @@ class FASubmission(object):
     
     @property
     def title(self):
+        if self._title: return self._title
         return self.s.findAll(attrs={'class' : 'cat'})[1].b.string
 
     @property
     def artist(self):
+        if self._artist: return self._artist
         return self.s.findAll(attrs={'class' : 'cat'})[1].find('a').string
     
     @property
@@ -32,13 +42,12 @@ class FASubmission(object):
         return keywords
 
     @property
-    def rating(self, id):
-        r = fa.helper.getpost(id, self.logincookie)
-        if "/themes/classic/img/labels/general.gif" in r:
+    def rating(self):
+        if "/themes/classic/img/labels/general.gif" in self.data:
             return "General"
-        elif "/themes/classic/img/labels/mature.gif" in r:
+        elif "/themes/classic/img/labels/mature.gif" in self.data:
             return "Questionable/Mature"
-        elif "/themes/classic/img/labels/adult.gif" in r:
+        elif "/themes/classic/img/labels/adult.gif" in self.data:
             return "Adult"
 
     def info(self):
@@ -47,11 +56,11 @@ class FASubmission(object):
         self.category = a[2].strip().replace("Category: ", "")
         self.theme = a[3].strip().replace('Theme: ', '')
         self.species = a[4].strip().replace('Species: ', '')
-        self.gender = a[4].strip().replace('Gender: ', '')
-        self.favorites = int(a[6])
-        self.comments = int(a[7].strip().replace('Comments: ', ''))
-        self.views = int(a[8].strip().replace('Views: ', ''))
-        self.reso = a[12].strip().replace('Resolution: ', '')
+        self.gender = a[5].strip().replace('Gender: ', '')
+        self.favorites = int(a[7])
+        self.comments = int(a[8].strip().replace('Comments: ', ''))
+        self.views = int(a[9].strip().replace('Views: ', ''))
+        self.resolution = a[12].strip().replace('Resolution: ', '')
 
     def addfav(self):
         url = "https://furaffinity.net" + self.s.find(attrs={'class' : 'alt1 actions aligncenter'}).find('b').a.get('href')
