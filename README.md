@@ -9,12 +9,11 @@ An API-like wrapper for FurAffinity, written in Python 3.6.
 
 ## Getting Started
 
-1. [Set up Selenium using Chromedriver](http://selenium-python.readthedocs.io/installation.html)
-2. Install FA-Python from repository
+1. Install FA-Python from repository
     ```sh
     pip install https://github.com/Rendyindo/yippi/archive/master.zip
     ```
-3. Run some examples above to try.
+2. Run some examples above to try.
 
 ## Examples
 
