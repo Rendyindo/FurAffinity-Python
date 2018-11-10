@@ -18,7 +18,7 @@ class FASubmission(object):
         return self.title + " by " + self.artist
 
     @property
-    def imglink(self):
+    def link(self):
         return self.s.find(attrs={'class' : 'alt1 actions aligncenter'}).findAll('b')[1].a.get('href')
     
     @property
@@ -53,7 +53,7 @@ class FASubmission(object):
     @property
     def description(self):
         childs = self.s.find(attrs={'class': 'maintable'}).findAll("tr")[1].td.table.findAll("tr")[2].td.children
-        return ''.join(map(str, childs).replace("\n", "")
+        return ''.join(map(str, childs)).replace("\n", "")
 
     def info(self):
         a = self.s.find(attrs={ 'class' : 'alt1 stats-container'}).text.replace(u'\xa0', u' ').strip().split("\n")
