@@ -50,6 +50,11 @@ class FASubmission(object):
         elif "/themes/classic/img/labels/adult.gif" in self.data:
             return "Adult"
 
+    @property
+    def description(self):
+        childs = self.s.find(attrs={'class': 'maintable'}).findAll("tr")[1].td.table.findAll("tr")[2].td.children
+        return ''.join(map(str, childs).replace("\n", "")
+
     def info(self):
         a = self.s.find(attrs={ 'class' : 'alt1 stats-container'}).text.replace(u'\xa0', u' ').strip().split("\n")
         self.postdate = self.s.find(attrs={ 'class' : 'alt1 stats-container'}).find('span').get('title')
