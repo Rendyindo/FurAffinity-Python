@@ -19,7 +19,7 @@ class FASubmission(object):
 
     @property
     def link(self):
-        return self.s.find(attrs={'class' : 'alt1 actions aligncenter'}).findAll('b')[1].a.get('href')
+        return "https:" + self.s.find(attrs={'class' : 'alt1 actions aligncenter'}).findAll('b')[1].a.get('href')
     
     @property
     def title(self):
