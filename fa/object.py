@@ -123,7 +123,7 @@ class FAUser(object):
 
     @property
     def profile(self):
-        return r'\n'.join(self.info[6:])
+        return ''.join(list(q.s.find(attrs={'class': 'ldot'}).children)[18:])
 
     @property
     def mood(self):
@@ -189,19 +189,7 @@ class Journal(object):
 
     @property
     def content(self):
-        try:
-            head = self.s.find(attrs={ 'class': 'journal-header'}).text.strip()
-        except:
-            head = ''
-        try:
-            footer = self.s.find(attrs={ 'class': 'journal-footer'}).text.strip()
-        except:
-            footer = ''
-        try:
-            body = self.s.find(attrs={ 'class': 'journal-body'}).text.strip()
-        except:
-            body = ''
-        return head + "|" + body + "|" + footer
+        return ''.join(list(self.s.find(attrs={'class': 'journal-body'}).parent.children))  # TODO: Make efficient
 
     @property
     def postdate(self):
