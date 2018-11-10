@@ -128,7 +128,8 @@ class FAUser(object):
 
     @property
     def profile(self):
-        return ''.join(list(q.s.find(attrs={'class': 'ldot'}).children)[18:])
+        htext = list(self.s.find(attrs={'class': 'ldot'}).children)[18:]
+        return ''.join(list(map(str, htext))).replace("\n", "")
 
     @property
     def mood(self):
@@ -194,7 +195,8 @@ class Journal(object):
 
     @property
     def content(self):
-        return ''.join(list(self.s.find(attrs={'class': 'journal-body'}).parent.children))  # TODO: Make efficient
+        hcontent = self.s.find(attrs={'class': 'journal-body'}).parent.children
+        return ''.join(list(map(str, hcontent))).replace("\n", "")  # TODO: Make efficient
 
     @property
     def postdate(self):
