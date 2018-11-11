@@ -14,6 +14,10 @@ class FASubmission(object):
         if data:
             self.s = BeautifulSoup(self.data, 'html.parser')
         self.logincookie = logincookie
+        if "File type" in str(self.s):
+            self._file = True
+        else:
+            self._file = False
     
     def __repr__(self):
         return self.title + " by " + self.artist
@@ -62,12 +66,20 @@ class FASubmission(object):
         self.postdate = self.s.find(attrs={ 'class' : 'alt1 stats-container'}).find('span').get('title')
         self.category = a[2].strip().replace("Category: ", "")
         self.theme = a[3].strip().replace('Theme: ', '')
-        self.species = a[4].strip().replace('Species: ', '')
-        self.gender = a[5].strip().replace('Gender: ', '')
-        self.favorites = int(a[7])
-        self.comments = int(a[8].strip().replace('Comments: ', ''))
-        self.views = int(a[9].strip().replace('Views: ', ''))
-        self.resolution = a[12].strip().replace('Resolution: ', '')
+        if self._file:
+            self.species = None
+            self.gender = None
+            self.favorites = int(a[5])
+            self.comments = int(a[6].strip().replace('Comments: ', ''))
+            self.views = int(a[7].strip().replace('Views: ', ''))
+            self.resolution = None
+        else:
+            self.species = a[4].strip().replace('Species: ', '')
+            self.gender = a[5].strip().replace('Gender: ', '')
+            self.favorites = int(a[7])
+            self.comments = int(a[8].strip().replace('Comments: ', ''))
+            self.views = int(a[9].strip().replace('Views: ', ''))
+            self.resolution = a[12].strip().replace('Resolution: ', '')
 
     def addfav(self):
         url = "https://furaffinity.net" + self.s.find(attrs={'class' : 'alt1 actions aligncenter'}).find('b').a.get('href')
