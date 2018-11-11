@@ -43,7 +43,7 @@ class FASubmission(object):
             for kw in self.s.find(attrs={'id' : 'keywords'}).findAll('a'):
                 keywords.append(kw.string)
         except:
-            keywords.append("Unspecified")
+            pass
         return keywords
 
     @property
