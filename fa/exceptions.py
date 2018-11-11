@@ -1,7 +1,8 @@
 class InvalidParameter(Exception):
     pass
 
-class UserNotFound(Exception):
+
+class NotFound(Exception):
     pass
 
 class Forbidden(Exception):

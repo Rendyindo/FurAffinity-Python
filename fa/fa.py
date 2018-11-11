@@ -1,5 +1,9 @@
+import fa.exceptions
+import fa.helper
+import fa.object
+import requests
 from bs4 import BeautifulSoup
-import requests, fa.object, fa.helper, fa.exceptions
+
 
 class FurAffinity():
     def __init__(self, a="", b="", cfuid=""):
@@ -14,6 +18,8 @@ class FurAffinity():
             raise fa.exceptions.Forbidden("You need to login to view this user!")
         if "not allowed to view this image due to the content filter" in r:
             raise fa.exceptions.Forbidden("You need to apply your current content filter settings!")
+        if "The submission you are trying to find is not in our database" in r:
+            raise fa.exceptions.NotFound("Submission cannot be found!")
         return fa.object.FASubmission(r, self.logincookie)
 
     @property
@@ -63,7 +69,7 @@ class FurAffinity():
             name = name.replace("_", "")
         r = fa.helper.getuser(name, self.logincookie)
         if "This user cannot be found." in r:
-            raise fa.exceptions.UserNotFound("User cannot be found!")
+            raise fa.exceptions.NotFound("User cannot be found!")
         if "registered users only" in r:
             raise fa.exceptions.Forbidden("You need to login to view this user!")
         return fa.object.FAUser(r, self.logincookie)
