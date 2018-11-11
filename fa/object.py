@@ -14,7 +14,7 @@ class FASubmission(object):
         if data:
             self.s = BeautifulSoup(self.data, 'html.parser')
         self.logincookie = logincookie
-        if "File type" in str(self.s):
+        if "File type" in self.data or "audio-player-container" in self.data:
             self._file = True
         else:
             self._file = False
