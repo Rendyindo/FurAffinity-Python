@@ -57,7 +57,10 @@ class FASubmission(object):
 
     @property
     def description(self):
-        childs = self.s.find(attrs={'class': 'maintable'}).findAll("tr")[1].td.table.findAll("tr")[2].td.children
+        if self._file:
+            childs = list(self.s.findAll(attrs={'class': 'maintable'})[1].children)[-2].td.children
+        else:
+            childs = self.s.find(attrs={'class': 'maintable'}).findAll("tr")[1].td.table.findAll("tr")[2].td.children
         desc_text = ''.join(map(str, childs)).replace("\n", "")
         return re.sub("^.*?(?=<br/><br/>\s)", "", desc_text)
 
