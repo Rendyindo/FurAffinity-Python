@@ -167,7 +167,7 @@ class FAUser(object):
         return FASubmission(fa.helper.getpost(id, self.__logincookie), self.__logincookie)
 
     def gallery(self):
-        url = "http://www.furaffinity.net/gallery/" + self.username
+        url = "http://www.furaffinity.net/gallery/" + self.username + "/1"
         b = requests.get(url, cookies=self.__logincookie)
         return Gallery(url, b.text, self.__logincookie)
 
