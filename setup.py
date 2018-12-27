@@ -17,7 +17,7 @@ DESCRIPTION = 'FurAffinity scaper written in Python.'
 URL = 'https://github.com/Rendyindo/FurAffinity-Python/'
 EMAIL = 'rendyarya22@gmail.com'
 AUTHOR = 'Rendy Aya Kemal'
-REQUIRES_PYTHON = '>=3.6.0'
+REQUIRES_PYTHON = '>=3.5.0'
 VERSION = '0.0.1'
 
 # What packages are required for this module to be executed?
