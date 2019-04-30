@@ -238,8 +238,6 @@ class Gallery(object):
         postlist = []
         for post in s.findAll("figure"):
             r = fa.helper.getpost(post.a.get("href").replace("/view/", ""), self.__logincookie)
-            print(r)
-            print(post.a.get("href").replace("/view/", ""))
             postlist.append(FASubmission(r, self.__logincookie))
         return postlist
 
