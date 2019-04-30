@@ -244,8 +244,8 @@ class Gallery(object):
         return postlist
 
     def next(self):
-        page = int(self.__url.split("/")[-1])
-        url = self.__url + str(page + 1)
+        s = BeautifulSoup(self.__page_source, "html.parser")
+        url = "http://www.furaffinity.net" + s.find(attrs={'class': 'button-link right'}).get("href")
         r = requests.get(url)
         self.__page_source = r.text
 
@@ -277,25 +277,5 @@ class Commission(object):
         return self.__tds[1].text
 
 
-class Favorites(object):
-    def __init__(self, url, source, logincookie):
-        self.__url = url
-        self.__page_source = source
-        self.__logincookie = logincookie
-
-    @property
-    def posts(self):
-        s = BeautifulSoup(self.__page_source, "html.parser")
-        postlist = []
-        for post in s.findAll("figure"):
-            r = fa.helper.getpost(post.a.get("href").replace("/view/", ""), self.__logincookie)
-            print(r)
-            print(post.a.get("href").replace("/view/", ""))
-            postlist.append(FASubmission(r, self.__logincookie))
-        return postlist
-
-    def next(self):
-        s = BeautifulSoup(self.__page_source, "html.parser")
-        url = "http://www.furaffinity.net" + s.find(attrs={'class': 'button-link right'}).get("href")
-        r = requests.get(url)
-        self.__page_source = r.text
+class Favorites(Gallery):
+    pass
