@@ -1,8 +1,8 @@
 import fa.exceptions
 import fa.helper
-import fa.object
 import requests
 from bs4 import BeautifulSoup
+from fa.objects import FASubmission, SearchResults, FAUser
 
 
 class FurAffinity():
@@ -20,7 +20,7 @@ class FurAffinity():
             raise fa.exceptions.Forbidden("You need to apply your current content filter settings!")
         if "The submission you are trying to find is not in our database" in r:
             raise fa.exceptions.NotFound("Submission cannot be found!")
-        return fa.object.FASubmission(r, self.logincookie)
+        return FASubmission(r, self.logincookie)
 
     @property
     def username(self):
@@ -46,7 +46,7 @@ class FurAffinity():
         postlist = []
         for post in s.findAll("figure")[:limit]:
             r = fa.helper.getpost(post.a.get("href").replace("/view/", ""), self.logincookie)
-            postlist.append(fa.object.FASubmission(r, self.logincookie))
+            postlist.append(FASubmission(r, self.logincookie))
         return postlist
 
     def search(self, *query, page=1, sort="relevancy", order="desc"):
@@ -62,7 +62,7 @@ class FurAffinity():
                     'type-flash': 'on', 'type-photo': 'on', 'type-music': 'on', 'type-story': 'on', \
                     'type-poetry': 'on', 'mode': 'extended', 'page': page}
         r = requests.post("http://www.furaffinity.net/search/", data=postdata)
-        return fa.object.SearchResults(r.text, self.logincookie, postdata)
+        return SearchResults(r.text, self.logincookie, postdata)
 
     def user(self, name):
         if "_" in name:
@@ -72,4 +72,4 @@ class FurAffinity():
             raise fa.exceptions.NotFound("User cannot be found!")
         if "registered users only" in r:
             raise fa.exceptions.Forbidden("You need to login to view this user!")
-        return fa.object.FAUser(r, self.logincookie)
+        return FAUser(r, self.logincookie)
