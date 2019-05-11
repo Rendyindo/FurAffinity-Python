@@ -14,34 +14,35 @@ class FASubmission(object):
         self._artist = artist
         self.__data = data
         if data:
-            self.s = BeautifulSoup(self.__data, 'html.parser')
+            self.__s = BeautifulSoup(self.__data, 'html.parser')
         if "File type" in self.__data or "audio-player-container" in self.__data:
             self._file = True
         else:
             self._file = False
+        self._a = self.__s.find(attrs={'class': 'alt1 stats-container'}).text.replace(u'\xa0', u' ').strip().split("\n")
 
     def __repr__(self):
         return self.title + " by " + self.artist
 
     @property
     def link(self):
-        return "https:" + self.s.find(attrs={'class': 'alt1 actions aligncenter'}).findAll('b')[1].a.get('href')
+        return "https:" + self.__s.find(attrs={'class': 'alt1 actions aligncenter'}).findAll('b')[1].a.get('href')
 
     @property
     def title(self):
         if self._title: return self._title
-        return self.s.findAll(attrs={'class': 'cat'})[1].b.string
+        return self.__s.findAll(attrs={'class': 'cat'})[1].b.string
 
     @property
     def artist(self):
         if self._artist: return self._artist
-        return self.s.findAll(attrs={'class': 'cat'})[1].find('a').string
+        return self.__s.findAll(attrs={'class': 'cat'})[1].find('a').string
 
     @property
     def keywords(self):
         keywords = []
         try:
-            for kw in self.s.find(attrs={'id': 'keywords'}).findAll('a'):
+            for kw in self.__s.find(attrs={'id': 'keywords'}).findAll('a'):
                 keywords.append(kw.string)
         except:
             pass
@@ -59,34 +60,56 @@ class FASubmission(object):
     @property
     def description(self):
         if self._file:
-            childs = list(self.s.findAll(attrs={'class': 'maintable'})[1].children)[-2].td.children
+            childs = list(self.__s.findAll(attrs={'class': 'maintable'})[1].children)[-2].td.children
         else:
-            childs = self.s.find(attrs={'class': 'maintable'}).findAll("tr")[1].td.table.findAll("tr")[2].td.children
+            childs = self.__s.find(attrs={'class': 'maintable'}).findAll("tr")[1].td.table.findAll("tr")[2].td.children
         desc_text = ''.join(map(str, childs)).replace("\n", "")
         return re.sub("^.*?(?=<br/><br/>\s)", "", desc_text)
 
-    def info(self):
-        a = self.s.find(attrs={'class': 'alt1 stats-container'}).text.replace(u'\xa0', u' ').strip().split("\n")
-        self.postdate = self.s.find(attrs={'class': 'alt1 stats-container'}).find('span').get('title')
-        self.category = a[2].strip().replace("Category: ", "")
-        self.theme = a[3].strip().replace('Theme: ', '')
-        if self._file:
-            self.species = None
-            self.gender = None
-            self.favorites = int(a[5])
-            self.comments = int(a[6].strip().replace('Comments: ', ''))
-            self.views = int(a[7].strip().replace('Views: ', ''))
-            self.resolution = None
-        else:
-            self.species = a[4].strip().replace('Species: ', '')
-            self.gender = a[5].strip().replace('Gender: ', '')
-            self.favorites = int(a[7])
-            self.comments = int(a[8].strip().replace('Comments: ', ''))
-            self.views = int(a[9].strip().replace('Views: ', ''))
-            self.resolution = a[12].strip().replace('Resolution: ', '')
+    @property
+    def postdate(self):
+        return self.__s.find(attrs={'class': 'alt1 stats-container'}).find('span').get('title')
+
+    @property
+    def category(self):
+        return self._a[2].strip().replace("Category: ", "")
+
+    @property
+    def theme(self):
+        return self._a[3].strip().replace('Theme: ', '')
+
+    @property
+    def species(self):
+        if self._file: return None
+        return self._a[4].strip().replace('Species: ', '')
+
+    @property
+    def gender(self):
+        if self._file: return None
+        return self._a[5].strip().replace('Gender: ', '')
+
+    @property
+    def favorites(self):
+        if self._file: return int(self._a[5])
+        return int(self._a[7])
+
+    @property
+    def comments(self):
+        if self._file: return int(self._a[6].strip().replace('Comments: ', ''))
+        return int(self._a[8].strip().replace('Comments: ', ''))
+
+    @property
+    def views(self):
+        if self._file: return int(self._a[7].strip().replace('Views: ', ''))
+        return int(self._a[9].strip().replace('Views: ', ''))
+
+    @property
+    def resolution(self):
+        if self._file: return None
+        return self._a[12].strip().replace('Resolution: ', '')
 
     def addfav(self):
-        url = "https://furaffinity.net" + self.s.find(attrs={'class': 'alt1 actions aligncenter'}).find('b').a.get(
+        url = "https://furaffinity.net" + self.__s.find(attrs={'class': 'alt1 actions aligncenter'}).find('b').a.get(
             'href')
         r = requests.get(url, cookies=account.logincookie)
         if r.status_code == 200:
