@@ -1,4 +1,5 @@
 import requests, time
+from fa import account
 
 def RateLimit(maxPerSecond):
     minInterval = 1.0 / float(maxPerSecond)
@@ -16,24 +17,24 @@ def RateLimit(maxPerSecond):
     return decorate
 
 @RateLimit(2)
-def getpost(id, logincookie):
-    r = requests.get("http://www.furaffinity.net/view/" + id, cookies=logincookie)
+def getpost(id):
+    r = requests.get("http://www.furaffinity.net/view/" + id, cookies=account.logincookie)
     if r.status_code == 200:
         return r.text
     else:
         return r.raise_for_status()
 
 @RateLimit(2)
-def getuser(id, logincookie):
-    r = requests.get("http://www.furaffinity.net/user/" + id, cookies=logincookie)
+def getuser(id):
+    r = requests.get("http://www.furaffinity.net/user/" + id, cookies=account.logincookie)
     if r.status_code == 200:
         return r.text
     else:
         return r.raise_for_status()
 
 @RateLimit(2)
-def getjournal(id, logincookie):
-    r = requests.get("http://www.furaffinity.net/journal/" + id, cookies=logincookie)
+def getjournal(id):
+    r = requests.get("http://www.furaffinity.net/journal/" + id, cookies=account.logincookie)
     if r.status_code == 200:
         return r.text
     else:

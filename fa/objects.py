@@ -1,20 +1,20 @@
 import re
-
+from fa import account
 import requests
 from bs4 import BeautifulSoup
 
 import fa
 import fa.helper
+from fa.exceptions import Forbidden
 
 
 class FASubmission(object):
-    def __init__(self, data, logincookie, postid=0, title=None, artist=None):
+    def __init__(self, data, postid=0, title=None, artist=None):
         self._title = title
         self._artist = artist
         self.__data = data
         if data:
             self.s = BeautifulSoup(self.__data, 'html.parser')
-        self.__logincookie = logincookie
         if "File type" in self.__data or "audio-player-container" in self.__data:
             self._file = True
         else:
@@ -88,7 +88,7 @@ class FASubmission(object):
     def addfav(self):
         url = "https://furaffinity.net" + self.s.find(attrs={'class': 'alt1 actions aligncenter'}).find('b').a.get(
             'href')
-        r = requests.get(url, cookies=self.__logincookie)
+        r = requests.get(url, cookies=account.logincookie)
         if r.status_code == 200:
             pass
         else:
@@ -96,9 +96,8 @@ class FASubmission(object):
 
 
 class SearchResults(object):
-    def __init__(self, source, logincookie, postdata):
+    def __init__(self, source, postdata):
         self.__page_source = source
-        self.__logincookie = logincookie
         self.__postdata = postdata
 
     @property
@@ -106,13 +105,13 @@ class SearchResults(object):
         s = BeautifulSoup(self.__page_source, "html.parser")
         postlist = []
         for post in s.findAll("figure"):
-            r = fa.helper.getpost(post.a.get("href").replace("/view/", ""), self.__logincookie)
+            r = fa.helper.getpost(post.a.get("href").replace("/view/", ""))
             if "registered users only" in r:
                 pass
             elif "not allowed to view this image due to the content filter" in r:
                 pass
             else:
-                postlist.append(FASubmission(r, self.__logincookie))
+                postlist.append(FASubmission(r))
         return postlist
 
     def next(self):
@@ -122,10 +121,9 @@ class SearchResults(object):
 
 
 class FAUser(object):
-    def __init__(self, data, logincookie):
+    def __init__(self, data):
         self.__data = data
         self.__s = BeautifulSoup(self.__data, 'html.parser')
-        self.__logincookie = logincookie
         self.__info = self.__s.find(attrs={'class': 'ldot'}).text.split("\n")
 
     def __repr__(self):
@@ -159,22 +157,22 @@ class FAUser(object):
     @property
     def featured_journal(self):
         id = self.__s.find(attrs={'class': 'no_overflow'}).a.get('href').replace("/journal/", "")
-        return Journal(fa.helper.getjournal(id, self.__logincookie), self.__logincookie)
+        return Journal(fa.helper.getjournal(id))
 
     @property
     def featured_submission(self):
         id = self.__s.find(attrs={'class': 'flow userpage-featured-submission'}).s.a.get('href').replace("/view/", "")
-        return FASubmission(fa.helper.getpost(id, self.__logincookie), self.__logincookie)
+        return FASubmission(fa.helper.getpost(id))
 
     def gallery(self):
         url = "http://www.furaffinity.net/gallery/" + self.username + "/1"
-        b = requests.get(url, cookies=self.__logincookie)
-        return Gallery(url, b.text, self.__logincookie)
+        b = requests.get(url, cookies=account.logincookie)
+        return Gallery(url, b.text)
 
     def scraps(self):
         url = "http://www.furaffinity.net/scraps/" + self.username
-        b = requests.get(url, self.__logincookie)
-        return Gallery(url, b.text, self.__logincookie)
+        b = requests.get(url, cookies=account.logincookie)
+        return Gallery(url, b.text)
 
     def watch(self):
         try:
@@ -182,27 +180,26 @@ class FAUser(object):
         except:
             raise fa.exceptions.Forbidden("You're not logged in.")
         url = "http://www.furaffinity.net" + watchurl
-        requests.get(url, cookies=self.__logincookie)
+        requests.get(url, cookies=account.logincookie)
 
     def commission(self):
         url = "http://www.furaffinity.net/commissions/" + self.username
-        r = BeautifulSoup(requests.get(url, cookies=self.__logincookie).text, 'html.parser')
+        r = BeautifulSoup(requests.get(url, cookies=account.logincookie).text, 'html.parser')
         c = []
         for info in r.find(attrs={'class': "types-table"}).findAll("tr"):
-            c.append(Commission(info, self.__logincookie))
+            c.append(Commission(info))
         return c
 
     def favorites(self):
         url = "http://www.furaffinity.net/favorites/" + self.username
-        b = requests.get(url, cookies=self.__logincookie)
-        return Favorites(url, b.text, self.__logincookie)
+        b = requests.get(url, cookies=account.logincookie)
+        return Favorites(url, b.text)
 
 
 class Journal(object):
-    def __init__(self, data, logincookie):
+    def __init__(self, data):
         self.__data = data
         self.__s = BeautifulSoup(self.__data, 'html.parser')
-        self.__logincookie = logincookie
 
     def __repr__(self):
         return self.title
@@ -227,18 +224,17 @@ class Journal(object):
 
 
 class Gallery(object):
-    def __init__(self, url, source, logincookie):
+    def __init__(self, url, source):
         self.__url = url
         self.__page_source = source
-        self.__logincookie = logincookie
 
     @property
     def posts(self):
         s = BeautifulSoup(self.__page_source, "html.parser")
         postlist = []
         for post in s.findAll("figure"):
-            r = fa.helper.getpost(post.a.get("href").replace("/view/", ""), self.__logincookie)
-            postlist.append(FASubmission(r, self.__logincookie))
+            r = fa.helper.getpost(post.a.get("href").replace("/view/", ""))
+            postlist.append(FASubmission(r))
         return postlist
 
     def next(self):
@@ -249,16 +245,15 @@ class Gallery(object):
 
 
 class Commission(object):
-    def __init__(self, source, logincookie):
+    def __init__(self, source):
         self.__source = BeautifulSoup(source, 'html.parser')
         self.__tds = self.__source.findAll("td")
-        self.__logincookie = logincookie
 
     @property
     def preview(self):
         post = self.__source.th.center.b.u.s.a.get("href")
         if "#" not in post:
-            return FASubmission(fa.helper.getpost(id, self.__logincookie), self.__logincookie)
+            return FASubmission(fa.helper.getpost(id))
         else:
             return None
 
@@ -277,3 +272,7 @@ class Commission(object):
 
 class Favorites(Gallery):
     pass
+
+class Account(FAUser):
+    def watch(self):
+        raise Forbidden("Cannot watch yourself.")
