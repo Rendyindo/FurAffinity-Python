@@ -16,7 +16,7 @@ def RateLimit(maxPerSecond):
         return rateLimitedFunction
     return decorate
 
-@RateLimit(2)
+@RateLimit(4)
 def getpost(id):
     r = requests.get("http://www.furaffinity.net/view/" + id, cookies=account.logincookie)
     if r.status_code == 200:
@@ -24,7 +24,7 @@ def getpost(id):
     else:
         return r.raise_for_status()
 
-@RateLimit(2)
+@RateLimit(4)
 def getuser(id):
     r = requests.get("http://www.furaffinity.net/user/" + id, cookies=account.logincookie)
     if r.status_code == 200:
@@ -32,7 +32,7 @@ def getuser(id):
     else:
         return r.raise_for_status()
 
-@RateLimit(2)
+@RateLimit(4)
 def getjournal(id):
     r = requests.get("http://www.furaffinity.net/journal/" + id, cookies=account.logincookie)
     if r.status_code == 200:
