@@ -102,3 +102,4 @@ ENV/
 .vscode/
 .idea/
 .pytest_cache/
+tests/cfg.py
