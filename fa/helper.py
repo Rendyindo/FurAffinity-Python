@@ -6,7 +6,7 @@ def RateLimit(maxPerSecond):
     def decorate(func):
         lastTimeCalled = [0.0]
         def rateLimitedFunction(*args,**kargs):
-            elapsed = time.process_time() - lastTimeCalled[0]
+            elapsed = time.perf_counter() - lastTimeCalled[0]
             leftToWait = minInterval - elapsed
             if leftToWait>0:
                 time.sleep(leftToWait)
