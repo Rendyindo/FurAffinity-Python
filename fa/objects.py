@@ -31,12 +31,12 @@ class FASubmission(object):
     @property
     def title(self):
         if self._title: return self._title
-        return self.__s.findAll(attrs={'class': 'cat'})[1].b.string
+        return self.__s.find(attrs={'class': 'classic-submission-title information'}).h2.string
 
     @property
     def artist(self):
         if self._artist: return self._artist
-        return self.__s.findAll(attrs={'class': 'cat'})[1].find('a').string
+        return self.__s.find(attrs={'class': 'classic-submission-title information'}).find('a').string
 
     @property
     def keywords(self):
