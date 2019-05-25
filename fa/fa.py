@@ -14,6 +14,7 @@ class FurAffinity():
             print("If you think this is a mistake, try to recheck your cookie again!")
     
     def show(self, id):
+        id = str(id)
         r = fa.helper.getpost(id)
         if "registered users only" in r:
             raise fa.exceptions.Forbidden("You need to login to view this user!")
